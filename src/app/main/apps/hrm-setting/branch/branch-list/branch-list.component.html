@@ -1,0 +1,507 @@
+<div class="content-wrapper container-xxl p-0">
+  <div class="content-body">
+    <!-- User List -->
+    <section class="users-list-wrapper">
+      <!-- users filter start -->
+      <div class="card">
+        <h5 class="card-header">Tìm kiếm</h5>
+        <div class="card-body">
+          <div class="users-list-filter">
+            <form>
+              <div class="row">
+                <div class="col-12 col-md-4">
+                  <fieldset class="form-group">
+                    <ng-select
+                      [items]="selectRole"
+                      [(ngModel)]="selectedRole1"
+                      name="selectedRole1"
+                      bindLabel="name"
+                      placeholder="Select Role"
+                      (change)="filterByRole($event)"
+                    ></ng-select>
+                  </fieldset>
+                </div>
+                <div class="col-12 col-md-4">
+                  <fieldset class="form-group">
+                    <ng-select
+                      [items]="selectPlan"
+                      [(ngModel)]="selectedPlan1"
+                      name="selectedPlan1"
+                      bindLabel="name"
+                      placeholder="Select Plan"
+                      (change)="filterByPlan($event)"
+                    ></ng-select>
+                  </fieldset>
+                </div>
+                <div class="col-12 col-md-4">
+                  <fieldset class="form-group">
+                    <ng-select
+                      [items]="selectStatus"
+                      [(ngModel)]="selectedStatus1"
+                      name="selectedStatus1"
+                      bindLabel="name"
+                      placeholder="Select Status"
+                      (change)="filterByStatus($event)"
+                    ></ng-select>
+                  </fieldset>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- users filter end -->
+
+      <div class="card">
+        <div class="row">
+          <div class="col-md-6 col-12">
+            <div class="d-flex justify-content-between align-items-center m-1">
+              <label class="d-flex align-items-center"
+                ><span>Xem</span>
+                <select class="form-control mx-25" [(ngModel)]="selectedOption">
+                  <option value="10">10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                  <option value="100">100</option>
+                </select>
+                <span>mục</span></label
+              >
+            </div>
+          </div>
+          <div
+            class="col-md-6 col-12 d-flex justify-content-start justify-content-md-end"
+          >
+            <div
+              class="d-flex align-items-center justify-content-end pr-1 pb-1 pb-md-0"
+            >
+              <label class="d-flex align-items-center ml-1 ml-md-0"
+                >Tìm Kiếm:<input
+                  [(ngModel)]="searchValue1"
+                  name="searchValue1"
+                  type="search"
+                  class="form-control ml-25"
+                  (keyup)="filterUpdate($event)"
+                  (search)="filterUpdate($event)"
+              /></label>
+              <button
+                class="btn btn-primary ml-1"
+                rippleEffect
+                (click)="openAddModal(modalBasic)"
+              >
+                <i
+                  data-feather="plus"
+                  class="d-sm-none d-inline-block mr-0 mr-sm-1"
+                ></i
+                ><span class="d-none d-sm-inline-block">Thêm Chi Nhánh</span>
+              </button>
+            </div>
+          </div>
+        </div>
+        <ngx-datatable
+          [rows]="rows"
+          [rowHeight]="50"
+          class="bootstrap core-bootstrap"
+          [limit]="selectedOption"
+          [columnMode]="ColumnMode.force"
+          [headerHeight]="50"
+          [footerHeight]="50"
+          [scrollbarH]="true"
+        >
+          <ngx-datatable-column name="Actions" [width]="40" [sortable]="false">
+            <ng-template ngx-datatable-cell-template let-row="row">
+              <div class="d-flex justify-content-between">
+                <!-- Button for Details modal -->
+                <button
+                  type="button"
+                  (click)="openDetailsModal(modalBasic, row)"
+                  class="btn btn-sm btn-icon"
+                >
+                  <span [data-feather]="'file-text'" [size]="16"></span>
+                </button>
+
+                <!-- Button for Edit modal -->
+                <button
+                  type="button"
+                  (click)="openEditModal(modalBasic, row)"
+                  class="btn btn-sm btn-icon"
+                >
+                  <span [data-feather]="'edit'" [size]="16"></span>
+                </button>
+
+                <!-- Button for Delete modal -->
+                <button
+                  type="button"
+                  (click)="openDeleteModal(modalDelete, row)"
+                  class="btn btn-sm btn-icon"
+                >
+                  <span [data-feather]="'trash'" [size]="16"></span>
+                </button>
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
+          <ngx-datatable-column
+            name="Tên Chi Nhánh"
+            prop="branchName"
+            [width]="200"
+          >
+            <ng-template
+              let-row="row"
+              let-name="value"
+              ngx-datatable-cell-template
+            >
+              <div class="d-flex align-items-center">
+                <!-- <div *ngIf="row.length > 0; else customAvatar">
+                  <img
+                    class="rounded-circle mr-1"
+                    src="{{ row.avatar }}"
+                    height="32"
+                    width="32"
+                    alt="datatable-avatar"
+                  />
+                </div> -->
+                <ng-template #customAvatar>
+                  <div
+                    class="avatar mr-1 ml-0"
+                    [ngClass]="{
+                      'bg-light-success': row.status == 'active',
+                      'bg-light-secondary': row.status == 'inactive',
+                      'bg-light-warning': row.status == 'pending'
+                    }"
+                  >
+                    <div class="avatar-content">{{ name | initials }}</div>
+                  </div>
+                </ng-template>
+                <div class="cell-line-height">
+                  <button
+                    type="button"
+                    (click)="openDetailsModal(modalBasic, row)"
+                    class="btn btn-sm btn-icon text-primary h5"
+                  >
+                    {{ name }}
+                  </button>
+                </div>
+              </div>
+            </ng-template>
+          </ngx-datatable-column>
+          <ngx-datatable-column
+            name="Email"
+            prop="email"
+            [width]="200"
+          ></ngx-datatable-column>
+          <ngx-datatable-column name="Địa Chỉ" prop="address" [width]="100">
+          </ngx-datatable-column>
+          <ngx-datatable-column
+            name="Mã Số Thuế"
+            prop="taxCode"
+            [width]="100"
+          ></ngx-datatable-column>
+          <ngx-datatable-column
+            name="Sdt"
+            prop="phoneNumber"
+            [width]="100"
+          ></ngx-datatable-column>
+        </ngx-datatable>
+      </div>
+    </section>
+    <!--/ User List -->
+  </div>
+
+  <!-- New Branch -->
+
+  <ng-template #modalBasic let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="myModalLabel1">
+        <ng-container *ngIf="modalMode === 'add'"
+          >Thêm mới chi nhánh</ng-container
+        >
+        <ng-container *ngIf="modalMode === 'edit'"
+          >Chỉnh sửa chi nhánh</ng-container
+        >
+        <ng-container *ngIf="modalMode === 'view'"
+          >Xem chi tiết chi nhánh</ng-container
+        >
+      </h4>
+      <button
+        type="button"
+        class="close"
+        (click)="modal.dismiss('Cross click')"
+        aria-label="Close"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body" tabindex="0" ngbAutofocus>
+      <div class="form-area">
+        <form [formGroup]="form" (ngSubmit)="onSubmitReactiveForm(modal)">
+          <!-- Tên chi nhánh -->
+          <div class="form-group">
+            <label for="branchName"
+              >Tên chi nhánh <span class="text-danger">(*)</span></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Tên chi nhánh"
+              formControlName="branchName"
+              [ngClass]="{
+                'is-invalid': BranchName.touched && BranchName.invalid,
+                'is-valid': BranchName.touched && BranchName.valid
+              }"
+            />
+            <div
+              class="invalid-feedback"
+              *ngIf="BranchName.touched && BranchName.invalid"
+            >
+              <div *ngIf="BranchName.errors?.required">
+                Tên chi nhánh là bắt buộc
+              </div>
+              <div
+                *ngIf="
+                  BranchName.errors?.minlength || BranchName.errors?.maxlength
+                "
+              >
+                Tên chi nhánh phải có ít nhất 5 ký tự và tối đa 255 ký tự
+              </div>
+              <div *ngIf="BranchName.errors?.duplicate">
+                Tên chi nhánh đã tồn tại.
+              </div>
+            </div>
+          </div>
+
+          <!-- Địa chỉ -->
+
+          <!-- Tỉnh/Thành phố -->
+          <div class="form-row">
+            <!-- Tỉnh/Thành phố -->
+            <div class="form-group col-md-4">
+              <label for="province"
+                >Tỉnh/Thành phố <span class="text-danger">(*)</span></label
+              >
+              <select class="form-control" formControlName="province">
+                <option value="">Chọn Tỉnh/Thành phố</option>
+                <option
+                  *ngFor="let province of provinces"
+                  [value]="province.id"
+                >
+                  {{ province.name }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Quận/Huyện -->
+            <div class="form-group col-md-4">
+              <label for="district"
+                >Quận/Huyện <span class="text-danger">(*)</span></label
+              >
+              <select class="form-control" formControlName="district">
+                <option value="">Chọn Quận/Huyện</option>
+                <option
+                  *ngFor="let district of districts"
+                  [value]="district.id"
+                >
+                  {{ district.name }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Xã/Phường -->
+            <div class="form-group col-md-4">
+              <label for="ward"
+                >Xã/Phường <span class="text-danger">(*)</span></label
+              >
+              <select class="form-control" formControlName="ward">
+                <option value="">Chọn Xã/Phường</option>
+                <option *ngFor="let ward of wards" [value]="ward.id">
+                  {{ ward.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Địa chỉ cụ thể -->
+          <div class="form-group">
+            <label for="specificAddress"
+              >Địa chỉ cụ thể <span class="text-danger">(*)</span></label
+            >
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fa fa-map-marker"></i>
+                </span>
+              </div>
+              <input
+                type="text"
+                class="form-control"
+                formControlName="specificAddress"
+                placeholder="Nhập địa chỉ cụ thể"
+                [ngClass]="{
+                  'is-invalid':
+                    SpecificAddress.touched && SpecificAddress.invalid,
+                  'is-valid': SpecificAddress.touched && SpecificAddress.valid
+                }"
+              />
+              <div
+                class="invalid-feedback"
+                *ngIf="SpecificAddress.touched && SpecificAddress.invalid"
+              >
+                <div *ngIf="SpecificAddress.errors?.required">
+                  Địa chỉ cụ thể là bắt buộc
+                </div>
+                <div
+                  *ngIf="
+                    SpecificAddress.errors?.minlength ||
+                    SpecificAddress.errors?.maxlength
+                  "
+                >
+                  Địa chỉ phải có ít nhất 5 ký tự và tối đa 255 ký tự
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label for="email"
+              >Email <span class="text-danger">(*)</span></label
+            >
+            <input
+              type="email"
+              class="form-control"
+              placeholder="Email"
+              formControlName="email"
+              [ngClass]="{
+                'is-invalid': Email.touched && Email.invalid,
+                'is-valid': Email.touched && Email.valid
+              }"
+            />
+            <div
+              class="invalid-feedback"
+              *ngIf="Email.touched && Email.invalid"
+            >
+              <div *ngIf="Email.errors?.required">Email là bắt buộc</div>
+              <div *ngIf="Email.errors?.pattern">Email không hợp lệ</div>
+              <div *ngIf="Email.errors?.duplicate">Email đã tồn tại.</div>
+            </div>
+          </div>
+
+          <!-- Số điện thoại -->
+          <div class="form-group">
+            <label for="phoneNumber"
+              >Số điện thoại <span class="text-danger">(*)</span></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Số điện thoại"
+              formControlName="phoneNumber"
+              [ngClass]="{
+                'is-invalid': PhoneNumber.touched && PhoneNumber.invalid,
+                'is-valid': PhoneNumber.touched && PhoneNumber.valid
+              }"
+            />
+            <div
+              class="invalid-feedback"
+              *ngIf="PhoneNumber.touched && PhoneNumber.invalid"
+            >
+              <div *ngIf="PhoneNumber.errors?.required">
+                Số điện thoại là bắt buộc
+              </div>
+              <div *ngIf="PhoneNumber.errors?.pattern">
+                Số điện thoại không hợp lệ
+              </div>
+              <div *ngIf="PhoneNumber.errors?.duplicate">
+                Số điện thoại đã tồn tại.
+              </div>
+            </div>
+          </div>
+
+          <!-- Mã số thuế -->
+          <div class="form-group">
+            <label for="taxCode"
+              >Mã số thuế <span class="text-danger">(*)</span></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Mã số thuế"
+              formControlName="taxCode"
+              [ngClass]="{
+                'is-invalid': TaxCode.touched && TaxCode.invalid,
+                'is-valid': TaxCode.touched && TaxCode.valid
+              }"
+            />
+            <div
+              class="invalid-feedback"
+              *ngIf="TaxCode.touched && TaxCode.invalid"
+            >
+              <div *ngIf="TaxCode.errors?.required">Mã số thuế là bắt buộc</div>
+              <div *ngIf="TaxCode.errors?.pattern">Mã số thuế không hợp lệ</div>
+              <div *ngIf="TaxCode.errors?.duplicate">
+                Mã số thuế đã tồn tại.
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <!-- Nếu là chế độ view, chỉ có nút đóng -->
+            <button
+              *ngIf="modalMode === 'view'"
+              type="button"
+              class="btn btn-secondary"
+              (click)="modal.close()"
+            >
+              Đóng
+            </button>
+            <!-- Nếu là chế độ add hoặc edit, hiển thị nút lưu -->
+            <button
+              *ngIf="modalMode !== 'view'"
+              type="submit"
+              class="btn btn-primary"
+              [disabled]="form.invalid"
+            >
+              Lưu
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #modalDelete let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title">Xác nhận xóa</h5>
+      <button
+        type="button"
+        class="close"
+        aria-label="Close"
+        (click)="modal.dismiss('Cross click')"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>
+        Bạn có chắc chắn muốn xóa
+        <strong>{{ selectedBranch?.branchName }}</strong> không?
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="modal.dismiss('cancel')"
+      >
+        Hủy
+      </button>
+      <button
+        type="button"
+        class="btn btn-danger"
+        (click)="deleteBranch(modal)"
+      >
+        Xóa
+      </button>
+    </div>
+  </ng-template>
+
+  <!--/ New User Sidebar -->
+</div>
